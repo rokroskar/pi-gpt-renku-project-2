@@ -18,8 +18,11 @@ from mnist_job.train import train as train_model  # noqa: E402
 
 st.set_page_config(page_title="MNIST Renku Demo", page_icon="🔢", layout="wide")
 
-DATA_DIR = Path(os.environ.get("MNIST_DATA_DIR", "/data/mnist"))
-MODEL_PATH = Path(os.environ.get("MNIST_MODEL_PATH", "models/mnist_cnn.pt"))
+DATA_DIR = Path(os.environ.get(
+    "MNIST_DATA_DIR",
+    "/home/renku/work/mnist-dataset-doi-10.5281-zenodo.10058130",
+))
+MODEL_PATH = Path(os.environ.get("MNIST_MODEL_PATH", "/home/renku/work/models/mnist_cnn.pt"))
 
 st.title("🔢 MNIST non-interactive ML training demo")
 st.caption("Data is read from the Renku Zenodo connector; no ad-hoc downloads are used.")
