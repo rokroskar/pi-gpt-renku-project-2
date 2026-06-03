@@ -22,7 +22,14 @@ DATA_DIR = Path(os.environ.get(
     "MNIST_DATA_DIR",
     "/home/renku/work/mnist-dataset-doi-10.5281-zenodo.10058130",
 ))
-MODEL_PATH = Path(os.environ.get("MNIST_MODEL_PATH", "/home/renku/work/models/mnist_cnn.pt"))
+MODEL_PATH = Path(os.environ.get(
+    "MNIST_MODEL_PATH",
+    "/home/renku/work/model-artifacts/mnist-models/mnist_cnn.pt",
+))
+PRETRAINED_MODEL_PATH = Path(os.environ.get(
+    "MNIST_PRETRAINED_MODEL_PATH",
+    "/home/renku/work/pretrained-model-artifacts/mnist-models/mnist_cnn.pt",
+))
 
 st.title("🔢 MNIST non-interactive ML training demo")
 st.caption("Data is read from the Renku Zenodo connector; no ad-hoc downloads are used.")
@@ -51,13 +58,21 @@ except Exception as exc:  # pragma: no cover - UI path
     st.error(str(exc))
     st.stop()
 
-if not MODEL_PATH.exists():
-    st.warning(f"Model `{MODEL_PATH}` not found.")
+active_model_path = MODEL_PATH
+if not active_model_path.exists() and PRETRAINED_MODEL_PATH.exists():
+    active_model_path = PRETRAINED_MODEL_PATH
+    st.info(f"Using pretrained model from read-only connector: `{active_model_path}`")
+
+if not active_model_path.exists():
+    st.warning(
+        f"No model found at writable connector path `{MODEL_PATH}` or "
+        f"pretrained connector path `{PRETRAINED_MODEL_PATH}`."
+    )
     if st.button("Train model now", type="primary"):
         with st.spinner("Training until test accuracy reaches 0.99..."):
             import argparse
             train_model(argparse.Namespace(
-                data_dir=str(mnist_root), output_dir="outputs", model_dir=str(MODEL_PATH.parent),
+                data_dir=str(mnist_root), output_dir=str(MODEL_PATH.parent), model_dir=str(MODEL_PATH.parent),
                 target_accuracy=0.99, max_epochs=20, batch_size=128, lr=3e-3,
                 weight_decay=1e-4, seed=42, num_workers=2, cpu=True,
             ))
@@ -65,12 +80,12 @@ if not MODEL_PATH.exists():
         st.rerun()
     st.stop()
 
-model, metrics = load_model(str(MODEL_PATH))
+model, metrics = load_model(str(active_model_path))
 cols = st.columns(4)
 cols[0].metric("Best test accuracy", f"{metrics.get('test_accuracy', float('nan')):.4f}")
 cols[1].metric("Epoch", metrics.get("epoch", "n/a"))
 cols[2].metric("Test loss", f"{metrics.get('test_loss', float('nan')):.4f}")
-cols[3].metric("Model", str(MODEL_PATH))
+cols[3].metric("Model", str(active_model_path))
 
 sample_count = st.slider("Number of samples", 4, 24, 12)
 seed = st.number_input("Random seed", min_value=0, value=7, step=1)

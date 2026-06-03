@@ -7,8 +7,8 @@ from pathlib import Path
 from .train import parse_args, train
 
 DEFAULT_DATA_DIR = "/home/renku/work/mnist-dataset-doi-10.5281-zenodo.10058130"
-DEFAULT_MODEL_DIR = "/home/renku/work/models"
-DEFAULT_OUTPUT_DIR = "/home/renku/work/outputs"
+DEFAULT_MODEL_DIR = "/home/renku/work/model-artifacts/mnist-models"
+DEFAULT_OUTPUT_DIR = "/home/renku/work/model-artifacts/mnist-models"
 DEFAULT_DASHBOARD = "/home/renku/work/pi-gpt-renku-project-2/dashboard/app.py"
 
 
