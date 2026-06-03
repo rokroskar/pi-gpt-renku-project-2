@@ -1,1 +1,1 @@
-web: streamlit run dashboard/app.py --server.address 0.0.0.0 --server.port ${PORT:-8888}
+web: marimo run dashboard/app.py --host 0.0.0.0 --port ${PORT:-8080} --headless --no-token

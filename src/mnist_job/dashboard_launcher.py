@@ -44,34 +44,34 @@ def ensure_model() -> None:
     train(parse_args())
 
 
-def start_streamlit() -> None:
+def start_marimo() -> None:
     dashboard = os.environ.get("MNIST_DASHBOARD_APP", DEFAULT_DASHBOARD)
     port = os.environ.get("PORT", "8080")
     argv = [
-        "streamlit",
+        "marimo",
         "run",
         dashboard,
-        "--server.address",
+        "--host",
         "0.0.0.0",
-        "--server.port",
+        "--port",
         port,
-        "--server.headless",
-        "true",
-        "--server.enableCORS",
-        "false",
-        "--server.enableXsrfProtection",
-        "false",
+        "--headless",
+        "--no-token",
+        "--session-ttl",
+        "1800",
     ]
-    base_url_path = os.environ.get("RENKU_BASE_URL_PATH", "").lstrip("/")
+    base_url_path = os.environ.get("RENKU_BASE_URL_PATH", "")
     if base_url_path:
-        argv.extend(["--server.baseUrlPath", base_url_path])
-    print("Starting Streamlit: " + " ".join(argv), flush=True)
+        if not base_url_path.startswith("/"):
+            base_url_path = "/" + base_url_path
+        argv.extend(["--base-url", base_url_path])
+    print("Starting Marimo: " + " ".join(argv), flush=True)
     os.execvp(argv[0], argv)
 
 
 def main() -> None:
     ensure_model()
-    start_streamlit()
+    start_marimo()
 
 
 if __name__ == "__main__":
