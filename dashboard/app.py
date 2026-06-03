@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import marimo
 
+__generated_with = "0.23.8"
 app = marimo.App(width="full")
 
 
@@ -60,11 +59,11 @@ def _():
 @app.cell
 def _(mo):
     mo.md(
-        """
-        # 🔢 MNIST non-interactive ML training demo
+        r"""
+# 🔢 MNIST non-interactive ML training demo
 
-        This Marimo dashboard reads MNIST from the Renku Zenodo connector and
-        visualizes predictions from a CNN trained by a non-interactive Renku job.
+This Marimo dashboard reads MNIST from the Renku Zenodo connector and
+visualizes predictions from a CNN trained by a non-interactive Renku job.
         """
     )
     return
