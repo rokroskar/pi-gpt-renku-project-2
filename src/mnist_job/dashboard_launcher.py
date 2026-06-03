@@ -62,6 +62,9 @@ def start_streamlit() -> None:
         "--server.enableXsrfProtection",
         "false",
     ]
+    base_url_path = os.environ.get("RENKU_BASE_URL_PATH", "").lstrip("/")
+    if base_url_path:
+        argv.extend(["--server.baseUrlPath", base_url_path])
     print("Starting Streamlit: " + " ".join(argv), flush=True)
     os.execvp(argv[0], argv)
 
