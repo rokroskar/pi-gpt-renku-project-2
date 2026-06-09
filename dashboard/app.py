@@ -96,7 +96,7 @@ def _(MODEL_PATH, PRETRAINED_MODEL_PATH, mo):
     else:
         model_status = mo.md(
             f"⚠️ No model found at writable path `{MODEL_PATH}` or pretrained path `{PRETRAINED_MODEL_PATH}`. "
-            "Use the retraining button below, or launch the auto-training dashboard launcher."
+            "Use the retraining button below, or run the training job launcher first."
         )
     model_status
     return active_model_path, model_source, model_status

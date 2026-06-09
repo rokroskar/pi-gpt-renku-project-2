@@ -11,7 +11,7 @@ The demo trains a small convolutional neural network on MNIST. The data is provi
 - **Early stopping by target metric**: training terminates once test accuracy reaches `>= 0.99`.
 - **Persistent model artifacts**: the trained model is written to the writable Renku artifact connector.
 - **Reusable image builds**: dependencies are installed from `requirements.txt` and reused by Renku launchers.
-- **Interactive model inspection**: a Marimo dashboard visualizes predictions and can train a model if one is missing.
+- **Interactive model inspection**: a Marimo dashboard visualizes predictions from an existing model artifact and offers a manual retraining button.
 
 ## Renku project launchers
 
@@ -21,7 +21,7 @@ This project is intentionally kept to three launchers:
 | --- | --- |
 | **Build reusable Python image (ttyd, marimo)** | Builds the reusable runtime image from this repository's requirements. |
 | **Train MNIST CNN direct Python** | Runs the non-interactive training job and writes model artifacts. |
-| **MNIST Marimo dashboard with auto-training** | Starts the Marimo dashboard; if no model artifact exists, trains one first. |
+| **MNIST Marimo dashboard** | Starts the Marimo dashboard using the existing model artifact. |
 
 ## Data and artifact locations on Renku
 
@@ -75,6 +75,12 @@ marimo run dashboard/app.py \
   --no-token
 ```
 
+Open the smaller Marimo notebook example:
+
+```bash
+marimo edit notebooks/marimo_mnist_example.py
+```
+
 ## Training outputs
 
 The training script writes:
@@ -95,11 +101,13 @@ FINAL_METRICS {"epoch": 6, "test_accuracy": 0.9917, ...}
 .
 ├── dashboard/
 │   └── app.py                      # Marimo inference dashboard
+├── notebooks/
+│   └── marimo_mnist_example.py     # Small Marimo notebook example
 ├── src/mnist_job/
 │   ├── data.py                     # MNIST connector data loading
 │   ├── model.py                    # Small CNN architecture
 │   ├── train.py                    # Non-interactive training entry point
-│   └── dashboard_launcher.py       # Renku dashboard wrapper with auto-training
+│   └── dashboard_launcher.py       # Renku dashboard wrapper for proxy-aware Marimo startup
 ├── requirements.txt                # Runtime dependencies for Renku image builds
 ├── Procfile                        # Simple web entry point
 └── README.md
@@ -114,7 +122,7 @@ Useful environment variables:
 | `MNIST_DATA_DIR` | `/data/mnist` for direct training; Renku connector path in launcher wrapper | Directory containing MNIST gzip files. |
 | `MNIST_MODEL_DIR` | `models` or Renku artifact path | Directory for saved model checkpoints. |
 | `MNIST_MODEL_PATH` | `<model-dir>/mnist_cnn.pt` | Checkpoint loaded by the dashboard. |
-| `MNIST_TARGET_ACCURACY` | `0.99` | Target accuracy used by dashboard auto-training. |
+| `MNIST_TARGET_ACCURACY` | `0.99` | Target accuracy used by the training script and manual dashboard retraining. |
 | `MNIST_MAX_EPOCHS` | `20` | Maximum epochs before failing if target accuracy is not reached. |
 | `PORT` | `8080` | Dashboard port. |
 | `RENKU_BASE_URL_PATH` | unset | Used by the Renku launcher so Marimo works behind the session proxy. |
@@ -124,5 +132,5 @@ Useful environment variables:
 - Use the image-build launcher after changing dependencies in `requirements.txt`.
 - Use the training launcher to create or refresh `mnist_cnn.pt` in the writable artifact connector.
 - Use the Marimo dashboard launcher to inspect predictions interactively.
-- The dashboard launcher calls `src.mnist_job.dashboard_launcher`, which checks for an existing model before starting Marimo.
+- The dashboard launcher starts Marimo behind the Renku session proxy and does not train automatically on startup.
 - The training job exits successfully only when the target accuracy is reached; otherwise it fails explicitly.
